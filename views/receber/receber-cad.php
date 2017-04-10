@@ -30,7 +30,7 @@
 <?php echo $modelo->form_msg;?>
 
 <div class="row">
-    <div class="col-sm-9">
+    <div class="<?php ( chk_array( $parametros, 1 ) ) ? print 'col-sm-9' : print 'col-sm-12'; ?>">
         <form method="post" action="">
             <div class="card-box">
 
@@ -62,7 +62,7 @@
                         <div class="form-group">
                             <label>Valor total *</label>
                             <input type="text" class="form-control border-input" placeholder="0,00" id="valor" name="valor" value="<?php
-                            echo htmlentities( chk_array( $modelo->form_data, 'valor') ); ?>" required align="right">
+                            echo htmlentities(  imprimeValorFormatado(chk_array( $modelo->form_data, 'valor'),1) ); ?>" required align="right">
                         </div>
                     </div>
                 </div>
@@ -136,48 +136,58 @@
         </form>
     </div>
 
-    <div class="col-sm-3">
-        <div class="card-box">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label>Data de quitação</label>
-                        <input type="text" class="form-control border-input datepicker" placeholder="" id="dataQuitacao" name="dataQuitacao" value="<?php
-                        echo htmlentities( converteData(chk_array( $modelo->form_data, 'dataQuitacao')) ); ?>" readonly>
+    <?php if(chk_array( $parametros, 1 )) {
+        ?>
+        <div class="col-sm-3">
+            <div class="card-box">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Data de quitação</label>
+                            <input type="text" class="form-control border-input datepicker" placeholder=""
+                                   id="dataQuitacao" name="dataQuitacao" value="<?php
+                            echo htmlentities(converteData(chk_array($modelo->form_data, 'dataQuitacao'))); ?>"
+                                   readonly>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label>Última alteração</label>
-                        <input type="text" class="form-control border-input datepicker" placeholder="" id="ultimaAlteracao" name="ultimaAlteracao" value="<?php
-                        echo htmlentities( converteData(chk_array( $modelo->form_data, 'ultimaAlteracao')) ); ?>" readonly>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Última alteração</label>
+                            <input type="text" class="form-control border-input datepicker" placeholder=""
+                                   id="ultimaAlteracao" name="ultimaAlteracao" value="<?php
+                            echo htmlentities(converteData(chk_array($modelo->form_data, 'ultimaAlteracao'))); ?>"
+                                   readonly>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label>Valor pago</label>
-                        <input type="text" class="form-control border-input" id="valorPago" name="valorPago" value="<?php
-                        if( isset($modelo->form_data['valorPago']) ) echo imprimeValorFormatado($modelo->form_data['valorPago'],1);
-                        ?>" readonly>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Valor pago</label>
+                            <input type="text" class="form-control border-input" id="valorPago" name="valorPago"
+                                   value="<?php
+                                   if (isset($modelo->form_data['valorPago'])) echo imprimeValorFormatado($modelo->form_data['valorPago'], 1);
+                                   ?>" readonly>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label>Valor em aberto</label>
-                        <input type="text" class="form-control border-input" id="valorPendente" name="valorPendente" value="<?php
-                        if( isset($modelo->form_data['valorPago']) ) echo imprimeValorFormatado($modelo->form_data['valor'] - $modelo->form_data['valorPago'],1);
-                        ?>" readonly>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Valor em aberto</label>
+                            <input type="text" class="form-control border-input" id="valorPendente" name="valorPendente"
+                                   value="<?php
+                                   if (isset($modelo->form_data['valorPago'])) echo imprimeValorFormatado($modelo->form_data['valor'] - $modelo->form_data['valorPago'], 1);
+                                   ?>" readonly>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+        <?php
+    }?>
 </div>
 <br>
 

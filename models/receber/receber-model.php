@@ -50,40 +50,40 @@ class ReceberModel
 	
 		// Configura os dados do formulário
 		$this->form_data = array();
-		
+
 		// Verifica se algo foi postado
 		if ( 'POST' == $_SERVER['REQUEST_METHOD'] && ! empty ( $_POST ) ) {
-		
+
 			// Faz o loop dos dados do post
 			foreach ( $_POST as $key => $value ) {
-			
+
 				// Configura os dados do post para a propriedade $form_data
 				$this->form_data[$key] = $value;
-			
+
 			}
-		
+
 		} else {
-		
+
 			// Termina se nada foi enviado
 			return;
-			
+
 		}
-		
+
 		// Verifica se a propriedade $form_data foi preenchida
 		if( empty( $this->form_data ) ) {
-			
+
 			echo 'preenchido';
 			return;
 		}
-		
+
 		// Verifica se o registro existe
 		$db_check_data = $this->db->query (
 			'SELECT * FROM `contas` WHERE `idConta` = ?',
-			array( 
+			array(
 				chk_array( $this->form_data, 'id')
-			) 
+			)
 		);
-		
+
 		// Verifica se a consulta foi realizada com sucesso
 		if ( ! $db_check_data ) {
 			$this->form_msg = '<div class="alert alert-danger" role="alert" align="center">
@@ -92,10 +92,10 @@ class ReceberModel
 							   </div>';
 			return;
 		}
-		
+
 		// Obtém os dados da base de dados MySQL
 		$fetch_data = $db_check_data->fetch();
-		
+
 		// Configura o ID da tabela
 		$data_id = $fetch_data['idConta'];
 
@@ -118,8 +118,9 @@ class ReceberModel
 		// Se o ID não estiver vazio, atualiza os dados
 		if ( ! empty($data_id) ) {
 
-			$query = $this->db->update('contas', 'idConta', $data_id, $arrayData);
-			
+            $query = $this->db->update('contas', 'idConta', $data_id, $arrayData);
+            $msg_return_success = '<b>Sucesso!</b> Os dados foram gravados corretamente.';
+
 			// Verifica se a consulta está OK e configura a mensagem
 			if ( ! $query ) {
 				$this->form_msg = '<div class="alert alert-danger" role="alert" align="center">
@@ -132,7 +133,7 @@ class ReceberModel
 			} else {
 				$this->form_msg = '<div class="alert alert-success alert-dismissable">
                                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                        <b>Sucesso!</b> Os dados foram gravados corretamente.
+                                        '.$msg_return_success.'
                                     </div>';
 				
 				// Termina
@@ -183,6 +184,95 @@ class ReceberModel
 			}
 		}
 	}
+
+    /**
+     * Método para realizar baixa parcial ou integral de uma conta à receber
+     */
+	public function baixaRecebimento ()
+    {
+
+        // Configura os dados do formulário
+        $this->form_data = array();
+
+        // Verifica se algo foi postado
+        if ( 'POST' == $_SERVER['REQUEST_METHOD'] && ! empty ( $_POST ) ) {
+
+            // Faz o loop dos dados do post
+            foreach ( $_POST as $key => $value ) {
+
+                // Configura os dados do post para a propriedade $form_data
+                $this->form_data[$key] = $value;
+
+            }
+
+        } else {
+
+            // Termina se nada foi enviado
+            return;
+
+        }
+
+        // Verifica se a propriedade $form_data foi preenchida
+        if( empty( $this->form_data ) ) {
+
+            echo 'preenchido';
+            return;
+        }
+
+        // Verifica se o registro existe
+        $db_check_data = $this->db->query (
+            'SELECT * FROM `contas` WHERE `idConta` = ?',
+            array(
+                chk_array( $this->form_data, 'id')
+            )
+        );
+
+        // Verifica se a consulta foi realizada com sucesso
+        if ( ! $db_check_data ) {
+            $this->form_msg = '<div class="alert alert-danger" role="alert" align="center">
+									<button type="button" aria-hidden="true" class="close" data-dismiss="alert">×</button>
+									<span><b> Não foi possível realizar a consulta. </b></span>
+							   </div>';
+            return;
+        }
+
+        // Obtém os dados da base de dados MySQL
+        $fetch_data = $db_check_data->fetch();
+
+        // Configura o ID da tabela
+        $data_id = $fetch_data['idConta'];
+
+        if($this->form_data['operacao'] == 'baixar_recebimento'){
+
+            $arrayBaixa = array(
+                'historico'  => $fetch_data['historico'] . ' | Baixa realizada em: '. date('d/m/Y') . ' ' .chk_array( $this->form_data, 'descricaoBaixa'),
+                'dataQuitacao'  => ( ( !empty(chk_array( $this->form_data, 'dataQuitacao') ) ) ? converteData( chk_array( $this->form_data, 'dataQuitacao') ) : NULL),
+                'valorPago' => $fetch_data['valorPago'] + str_replace( ' ','',str_replace( 'R$','',str_replace( ',','.',$this->form_data['valorPagamento'] ) ) )
+            );
+
+            $query = $this->db->update('contas', 'idConta', $data_id, $arrayBaixa);
+
+            // Verifica se a consulta está OK e configura a mensagem
+            if ( ! $query ) {
+                $this->form_msg = '<div class="alert alert-danger" role="alert" align="center">
+										<button type="button" aria-hidden="true" class="close" data-dismiss="alert">×</button>
+										<span><b> Não foi possível realizar a baixa do título, tente novamente. </b></span>
+								   </div>';
+
+                // Termina
+                return;
+            } else {
+                $this->form_msg = '<div class="alert alert-success alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                        <b>Sucesso!</b> A baixa foi realizada corretamente.
+                                    </div>';
+
+                // Termina
+                return;
+            }
+
+        }
+    }
 	
 	/**
 	 ** Busca dados do formulário
@@ -306,16 +396,19 @@ class ReceberModel
 		return $query->fetchAll();
 	}
 
-	public function getClientes() {
+	public function getClientes($idCliente=null) {
+
+	    $sql = 'SELECT * FROM `pessoa` WHERE `tipo` = "cliente" '.( ( $idCliente != null ) ? 'AND `idPessoa` = ?' : '').'  ORDER BY `nome`';
 
         // Simplesmente seleciona os dados na base de dados
-        $query = $this->db->query('SELECT * FROM `pessoa` WHERE tipo = "cliente" ORDER BY `nome`');
+        $query = ( $idCliente != null ) ? $this->db->query($sql, array($idCliente)) : $this->db->query($sql);
 
         // Verifica se a consulta está OK
         if ( ! $query ) {
             return array();
         }
+
         // Preenche a tabela com os dados do cliente
-        return $query->fetchAll();
+        return ( $idCliente != null ) ? $query->fetch() : $query->fetchAll();
     }
 }

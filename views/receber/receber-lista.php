@@ -2,9 +2,9 @@
 
 <?php
     // Carrega todos os métodos do modelo
-    $modelo->validate_register_form();
     $modelo->get_register_form( chk_array( $parametros, 1 ) );
     $modelo->del_receber( $parametros );
+    $modelo->baixaRecebimento();
 ?>
 
 <!-- Page-Title -->
