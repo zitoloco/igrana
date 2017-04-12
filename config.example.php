@@ -10,7 +10,7 @@ define( 'ABSPATH', dirname( __FILE__ ) );
 define( 'UP_ABSPATH', ABSPATH . '\views\_uploads' );
 
 // URL da home
-define( 'HOME_URI', '/igrana' );
+define( 'HOME_URI', '' );
 
 // Nome do host da base de dados
 define( 'HOSTNAME', 'localhost' );
@@ -28,7 +28,7 @@ define( 'DB_PASSWORD', 'dbpassword' );
 define( 'DB_CHARSET', 'utf8' );
 
 // Se você estiver desenvolvendo, modifique o valor para true
-define( 'DEBUG', true );
+define( 'DEBUG', false );
 
 /**
  * Não edite daqui em diante
